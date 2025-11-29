@@ -1,0 +1,398 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap');
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-8px);
+  }
+  75% {
+    transform: translateX(8px);
+  }
+}
+
+@keyframes correctGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(107, 142, 35, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 40px 10px rgba(107, 142, 35, 0);
+  }
+}
+
+@keyframes inkDrop {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+/* Container */
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f1eb 0%, #e8e0d5 50%, #f0ebe3 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0px 20px;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative elements */
+.ink-splatter-1 {
+  position: absolute;
+  top: 10%;
+  right: 5%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(ellipse at center, rgba(45, 45, 45, 0.03) 0%, transparent 70%);
+  border-radius: 50%;
+  transform: rotate(-15deg);
+}
+
+.ink-splatter-2 {
+  position: absolute;
+  bottom: 15%;
+  left: 3%;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(ellipse at center, rgba(139, 69, 19, 0.03) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: #2d2d2d;
+  margin: 0;
+  letter-spacing: 0.1em;
+  text-shadow: 2px 2px 0 rgba(139, 69, 19, 0.1);
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: #8b7355;
+  margin-top: 8px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+/* Score */
+.score-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  z-index: 10;
+}
+
+.score-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.score-label {
+  font-size: 0.7rem;
+  color: #8b7355;
+  letter-spacing: 0.1em;
+}
+
+.score-value {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2d2d2d;
+}
+
+.score-divider {
+  font-size: 1.2rem;
+  color: #ccc;
+  margin: 5px 0;
+}
+
+/* Card */
+.card {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: #fffef9;
+  border-radius: 4px;
+  box-shadow:
+    0 1px 1px rgba(0,0,0,0.05),
+    0 2px 2px rgba(0,0,0,0.05),
+    0 4px 4px rgba(0,0,0,0.05),
+    0 8px 8px rgba(0,0,0,0.05),
+    0 16px 16px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(139, 69, 19, 0.1);
+}
+
+.card-correct {
+  border-color: rgba(107, 142, 35, 0.3);
+  background: linear-gradient(to bottom, #fffef9, #f8faf0);
+}
+
+.card-incorrect {
+  border-color: rgba(199, 80, 80, 0.2);
+}
+
+.card-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+.card-inner {
+  padding: 40px 30px 30px;
+}
+
+.card-number {
+  position: absolute;
+  top: 15px;
+  left: 20px;
+  font-size: 0.75rem;
+  color: #bbb;
+  letter-spacing: 0.1em;
+}
+
+.card-kanji-small {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-family: 'Noto Serif JP', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: rgba(139, 69, 19, 0.603);
+  line-height: 1;
+}
+
+/* Kanji */
+.kanji-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.kanji {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 6rem;
+  font-weight: 700;
+  color: #2d2d2d;
+  line-height: 1;
+  text-shadow: 3px 3px 0 rgba(139, 69, 19, 0.08);
+  transition: transform 0.3s ease;
+  cursor: default;
+}
+
+/* Meaning */
+.meaning-reveal-container {
+  min-height: 3.5rem;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.meaning-reveal {
+  text-align: center;
+  padding: 12px 20px;
+  background: rgba(139, 69, 19, 0.05);
+  border-radius: 4px;
+}
+
+.meaning-text {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 1.3rem;
+  color: #5a4a3a;
+  letter-spacing: 0.05em;
+}
+
+/* Form */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.input {
+  width: 100%;
+  padding: 15px 0;
+  font-size: 1.1rem;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  border: none;
+  border-bottom: 2px solid #ddd;
+  background: transparent;
+  color: #2d2d2d;
+  outline: none;
+  text-align: center;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.input-correct {
+  border-bottom-color: #6b8e23;
+  color: #6b8e23;
+}
+
+.input-incorrect {
+  border-bottom-color: #c75050;
+}
+
+.input-underline {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: #8b7355;
+  transition: all 0.3s ease;
+}
+
+/* Feedback */
+.feedback-container {
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feedback {
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+}
+
+.feedback-correct {
+  color: #6b8e23;
+}
+
+.feedback-incorrect {
+  color: #c75050;
+}
+
+/* Buttons */
+.button-group {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.submit-button {
+  padding: 12px 28px;
+  font-size: 0.95rem;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-weight: 500;
+  color: #fff;
+  background: linear-gradient(135deg, #5a4a3a 0%, #3d3229 100%);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.1em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.reveal-button {
+  padding: 12px 28px;
+  font-size: 0.95rem;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-weight: 500;
+  color: #8b7355;
+  background: transparent;
+  border: 2px solid #d4c4b0;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.1em;
+}
+
+.next-button {
+  padding: 12px 28px;
+  font-size: 0.95rem;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-weight: 500;
+  color: #fff;
+  background: linear-gradient(135deg, #6b8e23 0%, #556b2f 100%);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.1em;
+  box-shadow: 0 2px 8px rgba(107, 142, 35, 0.3);
+}
+
+/* Seal */
+.seal {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Noto Serif JP', serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #c75050;
+  border: 2px solid #c75050;
+  border-radius: 4px;
+  opacity: 0.6;
+  transform: rotate(-5deg);
+}
+
+/* Hint */
+.hint {
+  margin-top: 25px;
+  font-size: 0.8rem;
+  color: #aaa;
+  letter-spacing: 0.05em;
+}

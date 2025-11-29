@@ -1,0 +1,51 @@
+/* Universal selector to target all elements and pseudo-elements */
+#root,
+*,
+*::before,
+*::after {
+  margin: 0; /* Remove default margins */
+  padding: 0; /* Remove default paddings */
+  box-sizing: border-box; /* Use border-box model for consistent sizing */
+}
+
+/* Optional: Reset specific element styles */
+body {
+  line-height: 1.5; /* Standardize line height */
+  -webkit-font-smoothing: antialiased; /* Improve text rendering on WebKit browsers */
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block; /* Treat these as block-level elements */
+  max-width: 100%; /* Ensure images and media don't overflow their containers */
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit; /* Inherit font styles from parent */
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word; /* Prevent long words from overflowing */
+}
+
+ul,
+ol {
+  list-style: none; /* Remove default list bullet points or numbers */
+}
+
+a {
+  text-decoration: none; /* Remove default underlines from links */
+  color: inherit; /* Inherit color from parent */
+}
