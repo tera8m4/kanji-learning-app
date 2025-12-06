@@ -117,7 +117,10 @@ export function useKanjiReview() {
   };
 
   const handleLearnMore = async () => {
+    setIsLoading(true);
     await transport.learnMoreKanjis();
+    const response = await transport.getKanjis();
+    loadKanjis(response);
   };
 
   const currentReview = reviewDeck[0];
