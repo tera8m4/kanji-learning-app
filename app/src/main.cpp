@@ -1,9 +1,11 @@
 #include "controller.h"
 #include "database/database_context.h"
+#include "scheduler/wanikani_scheduler.h"
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <nlohmann/json.hpp>
+#include <spdlog/spdlog.h>
 #include <string>
 #include <webview/webview.h>
 
@@ -17,7 +19,10 @@ int main()
 #endif
 	kanji::database::DatabaseContext context{"kanji.db"};
 	context.GetReviewStateRepository().InitializeNewReviewStates(20);
-	kanji::Controller controller{context};
+
+	auto scheduler = std::make_unique<kanji::scheduler::WaniKaniScheduler>();
+
+	kanji::Controller controller{context, std::move(scheduler)};
 
 	try
 	{
@@ -32,6 +37,14 @@ int main()
 		w.bind("GetKanjis", [&](const std::string&) -> std::string {
 			nlohmann::json j = controller.GetReviewKanjis();
 			return j.dump();
+		});
+		w.bind("SendAnswers", [&](const std::string& request) -> std::string {
+			spdlog::info("Received asnwers: {0}", request);
+
+			nlohmann::json j = nlohmann::json::parse(request);
+
+			controller.SetAnswers(j[0]["answers"]);
+			return {};
 		});
 		w.set_title("Basic Example");
 		w.set_size(800, 600, WEBVIEW_HINT_NONE);

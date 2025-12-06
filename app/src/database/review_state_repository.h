@@ -1,9 +1,13 @@
 #pragma once
 
+#include <cstdint>
+#include <vector>
+
 namespace kanji
 {
 	struct KanjiReviewState;
-}
+	struct KanjiAnswer;
+} // namespace kanji
 
 namespace kanji::database
 {
@@ -15,6 +19,8 @@ namespace kanji::database
 		explicit ReviewStateRepository(const SQLiteConnection& in_connection)
 		    : connection{in_connection}
 		{}
+
+		std::vector<KanjiReviewState> GetReviewStates(const std::vector<std::uint32_t>& ids);
 		void InitializeNewReviewStates(int count);
 		void CreateOrUpdateReviewState(const KanjiReviewState& state);
 

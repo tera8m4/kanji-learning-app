@@ -1,5 +1,5 @@
 #include "kanji.h"
-#include "sheduler/wanikani_scheduler.h"
+#include "scheduler/wanikani_scheduler.h"
 #include <catch2/catch_test_macros.hpp>
 
 using namespace kanji;

@@ -1,5 +1,6 @@
 #include "review_state_repository.h"
 #include "kanji.h"
+#include "scheduler/scheduler.h"
 #include "sqlite_connection.h"
 #include <spdlog/spdlog.h>
 #include <sqlite3.h>
@@ -7,6 +8,64 @@
 
 namespace kanji::database
 {
+	std::vector<KanjiReviewState> ReviewStateRepository::GetReviewStates(const std::vector<std::uint32_t>& ids)
+	{
+		std::vector<KanjiReviewState> states;
+
+		if (ids.empty())
+		{
+			return states;
+		}
+
+		// Build the IN clause with placeholders
+		std::string placeholders(ids.size() * 2 - 1, ',');
+		for (size_t i = 0; i < ids.size(); ++i)
+		{
+			placeholders[i * 2] = '?';
+		}
+
+		std::string select_sql =
+		    "SELECT kanji_id, level, next_review_date, created_at FROM kanji_review_state WHERE kanji_id IN (" +
+		    placeholders + ");";
+
+		sqlite3_stmt* stmt;
+		int rc = sqlite3_prepare_v2(connection, select_sql.c_str(), -1, &stmt, nullptr);
+		if (rc != SQLITE_OK)
+		{
+			spdlog::error("Failed to prepare statement: {0}", sqlite3_errmsg(connection));
+			return states;
+		}
+
+		// Bind all the IDs
+		for (size_t i = 0; i < ids.size(); ++i)
+		{
+			sqlite3_bind_int(stmt, static_cast<int>(i + 1), ids[i]);
+		}
+
+		// Fetch all matching states
+		while ((rc = sqlite3_step(stmt)) == SQLITE_ROW)
+		{
+			KanjiReviewState state;
+			state.kanji_id = sqlite3_column_int(stmt, 0);
+			state.level = sqlite3_column_int(stmt, 1);
+			std::int64_t next_review_timestamp = sqlite3_column_int64(stmt, 2);
+			std::int64_t created_timestamp = sqlite3_column_int64(stmt, 3);
+			state.next_review_date = std::chrono::system_clock::from_time_t(next_review_timestamp);
+			state.created_at = std::chrono::system_clock::from_time_t(created_timestamp);
+
+			states.push_back(state);
+		}
+
+		sqlite3_finalize(stmt);
+
+		if (rc != SQLITE_DONE && rc != SQLITE_ROW)
+		{
+			spdlog::error("Failed to fetch review states: {0}", sqlite3_errmsg(connection));
+		}
+
+		return states;
+	}
+
 	void ReviewStateRepository::InitializeNewReviewStates(int count)
 	{
 		const char* check_sql = "SELECT COUNT(*) FROM kanji_review_state WHERE created_at = next_review_date OR date(created_at, 'unixepoch') = date('now');";
@@ -108,7 +167,7 @@ namespace kanji::database
 
 		sqlite3_bind_int(stmt, 1, state.kanji_id);
 		sqlite3_bind_int(stmt, 2, state.level);
-		sqlite3_bind_int64(stmt, 4, timestamp);
+		sqlite3_bind_int64(stmt, 3, timestamp);
 
 		rc = sqlite3_step(stmt);
 		sqlite3_finalize(stmt);
