@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
-import { Transport, type KanjiAnswer } from "../core/transport";
+import * as wanakana from "wanakana";
+import type { KanjiAnswer } from "../core/transport";
 import type { KanjiState, ReviewItem } from "../components/types";
+import { createTransport } from "../core/transportFactory";
 
-const transport = new Transport();
+const transport = createTransport();
 
 export function useKanjiReview() {
   const [kanjis, setKanjis] = useState<KanjiState[]>([]);
@@ -11,6 +13,17 @@ export function useKanjiReview() {
   const [feedback, setFeedback] = useState<null | string>(null);
   const [shake, setShake] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Wrapper for setUserInput that applies wanakana conversion for word reviews
+  const handleUserInput = (value: string) => {
+    const currentReview = reviewDeck[0];
+    if (currentReview?.type === 'word') {
+      // Convert romaji to hiragana for word readings
+      setUserInput(wanakana.toHiragana(value, { IMEMode: true }));
+    } else {
+      setUserInput(value);
+    }
+  };
 
   const loadKanjis = (response: any[]) => {
     const loadedKanjis: KanjiState[] = response.map(k => ({
@@ -85,12 +98,16 @@ export function useKanjiReview() {
     const currentReview = reviewDeck[0];
     if (!userInput.trim() || !currentReview || feedback) return;
 
+    const finalInput = currentReview.type === "meaning"
+      ? userInput.toLowerCase().trim()
+      : wanakana.toHiragana(userInput.toLowerCase().trim());
+
     const isCorrect = currentReview.answer
       .toLowerCase()
       .trim()
       .split(',')
       .map(x => x.trim())
-      .includes(userInput.trim().toLowerCase());
+      .includes(finalInput);
 
     if (isCorrect) {
       setFeedback("correct");
@@ -132,7 +149,7 @@ export function useKanjiReview() {
     currentReview,
     currentKanji,
     userInput,
-    setUserInput,
+    setUserInput: handleUserInput,
     feedback,
     shake,
     isLoading,

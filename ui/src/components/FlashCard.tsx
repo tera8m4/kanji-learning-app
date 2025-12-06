@@ -1,5 +1,3 @@
-import { useRef, useEffect } from "react";
-import * as wanakana from "wanakana";
 import type { KanjiState, ReviewItem } from "./types";
 
 type FlashCardProps = {
@@ -23,26 +21,6 @@ export default function FlashCard({
   onInputChange,
   onSubmit,
 }: FlashCardProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  // Bind wanakana IME to input when reviewing word readings
-  useEffect(() => {
-    if (currentReview.type === 'word' && inputRef.current) {
-      wanakana.bind(inputRef.current);
-      return () => {
-        if (inputRef.current) {
-          wanakana.unbind(inputRef.current);
-        }
-      };
-    }
-  }, [currentReview.type]);
-
-  useEffect(() => {
-    if (!feedback && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [feedback]);
-
   const getPlaceholder = () => {
     if (currentReview.type === 'meaning') {
       return "Enter the meaning...";
@@ -69,7 +47,6 @@ export default function FlashCard({
         <form onSubmit={onSubmit} className="form">
           <div className="input-wrapper">
             <input
-              ref={inputRef}
               type="text"
               value={userInput}
               onChange={(e) => onInputChange(e.target.value)}
