@@ -14,6 +14,16 @@ export function useKanjiReview() {
   const [shake, setShake] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Shuffle array in random order using Fisher-Yates algorithm
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
   // Wrapper for setUserInput that applies wanakana conversion for word reviews
   const handleUserInput = (value: string) => {
     const currentReview = reviewDeck[0];
@@ -40,7 +50,9 @@ export function useKanjiReview() {
       });
     });
 
-    setReviewDeck(deck);
+    // Shuffle the deck for random order
+    const shuffledDeck = shuffleArray(deck);
+    setReviewDeck(shuffledDeck);
     setIsLoading(false);
   };
 
