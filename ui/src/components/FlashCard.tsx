@@ -1,3 +1,4 @@
+import { useRef, useEffect } from "react";
 import type { KanjiState, ReviewItem } from "./types";
 
 type FlashCardProps = {
@@ -21,6 +22,15 @@ export default function FlashCard({
   onInputChange,
   onSubmit,
 }: FlashCardProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Restore focus when feedback clears (after moving to next card)
+  useEffect(() => {
+    if (!feedback && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [feedback, currentReview]);
+
   const getPlaceholder = () => {
     if (currentReview.type === 'meaning') {
       return "Enter the meaning...";
@@ -47,6 +57,7 @@ export default function FlashCard({
         <form onSubmit={onSubmit} className="form">
           <div className="input-wrapper">
             <input
+              ref={inputRef}
               type="text"
               value={userInput}
               onChange={(e) => onInputChange(e.target.value)}
