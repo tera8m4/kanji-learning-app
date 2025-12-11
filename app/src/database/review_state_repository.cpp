@@ -68,30 +68,6 @@ namespace kanji::database
 
 	void ReviewStateRepository::InitializeNewReviewStates(int count)
 	{
-		const char* check_sql = "SELECT COUNT(*) FROM kanji_review_state WHERE created_at = next_review_date OR date(created_at, 'unixepoch') = date('now');";
-		sqlite3_stmt* check_stmt;
-
-		int rc = sqlite3_prepare_v2(connection, check_sql, -1, &check_stmt, nullptr);
-		if (rc != SQLITE_OK)
-		{
-			spdlog::error("Failed to prepare statement: {0}", sqlite3_errmsg(connection));
-			return;
-		}
-
-		rc = sqlite3_step(check_stmt);
-		int unreviewed_count = 0;
-		if (rc == SQLITE_ROW)
-		{
-			unreviewed_count = sqlite3_column_int(check_stmt, 0);
-		}
-		sqlite3_finalize(check_stmt);
-
-		// If there are unreviewed states, don't add new ones
-		if (unreviewed_count > 0)
-		{
-			return;
-		}
-
 		// Get next K kanjis that don't have review states
 		const char* select_sql =
 		    "SELECT id FROM kanjis "
@@ -99,7 +75,7 @@ namespace kanji::database
 		    "ORDER BY id LIMIT ?;";
 		sqlite3_stmt* select_stmt;
 
-		rc = sqlite3_prepare_v2(connection, select_sql, -1, &select_stmt, nullptr);
+		int rc = sqlite3_prepare_v2(connection, select_sql, -1, &select_stmt, nullptr);
 		if (rc != SQLITE_OK)
 		{
 			spdlog::error("Failed to prepare statement: {0}", sqlite3_errmsg(connection));
