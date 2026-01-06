@@ -7,7 +7,12 @@ set(CMAKE_CXX_STANDARD 23)
 
 if(MSVC)
     add_compile_options(/utf-8)
+    
+    set(FONT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/assets/komorebi-gothic.ttf")
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/resources.rc.in" "${CMAKE_CURRENT_BINARY_DIR}/resources.rc" @ONLY)
 endif()
+
+
 
 
 # create library from source files (excluding main.cpp)
@@ -37,7 +42,7 @@ target_include_directories(sqlite3 PUBLIC ${sqlite3_SOURCE_DIR})
 target_link_libraries("${PROJECT_NAME}Lib" PUBLIC webview::core sqlite3 nlohmann_json::nlohmann_json spdlog) 
 
 # add executable
-add_executable(${PROJECT_NAME} WIN32 src/main.cpp)
+add_executable(${PROJECT_NAME} WIN32 src/main.cpp ${CMAKE_CURRENT_BINARY_DIR}/resources.rc)
 target_link_libraries(${PROJECT_NAME} PRIVATE "${PROJECT_NAME}Lib")
 
 

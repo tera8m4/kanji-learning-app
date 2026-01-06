@@ -2,11 +2,12 @@
 #define STB_TRUETYPE_IMPLEMENTATION
 #include "wallpaper_service.h"
 #include "database/review_state_repository.h"
+#include "resources.h"
 #include "stb_image_write.h"
 #include "stb_truetype.h"
 #include "system/platform_info.h"
+#include "system/resource.h"
 #include <array>
-#include <fstream>
 #include <string>
 #include <unordered_map>
 
@@ -113,12 +114,10 @@ namespace kanji::wallpaper
 		WallpaperSettings settings{screen_info.width, screen_info.height, DEFAULT_XPADDING, DEFAULT_YPADDING, system::PlatformInfo::GetWallpaperLocation()};
 		const std::unordered_map<char32_t, int>& kanji_levels = review_repo.GetAllReviewLevels();
 
-		// Load a Japanese font (e.g., Noto Sans JP)
-		std::ifstream font_file("komorebi-gothic.ttf", std::ios::binary);
-		std::vector<unsigned char> font_buffer(std::istreambuf_iterator<char>(font_file), {});
+		kanji::system::Resource font_resource(IDR_WALLPAPER_PRIMARY_FONT);
 
 		stbtt_fontinfo font;
-		stbtt_InitFont(&font, font_buffer.data(), 0);
+		stbtt_InitFont(&font, static_cast<const unsigned char*>(font_resource.GetData()), 0);
 
 		std::size_t total_kanjis = 0;
 		for (const auto& str : JLPT_KANJIS)
@@ -142,7 +141,7 @@ namespace kanji::wallpaper
 			image[i * 3 + 2] = COLOR_SCHEME.background.b;
 		}
 
-		float scale = stbtt_ScaleForPixelHeight(&font, cell_size);
+		float scale = stbtt_ScaleForPixelHeight(&font, static_cast<float>(cell_size));
 
 		int jlpt_difficulty_level = 0;
 		std::size_t index = 0;

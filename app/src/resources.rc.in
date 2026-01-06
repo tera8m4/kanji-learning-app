@@ -1,0 +1,2 @@
+#include "resources.h"
+IDR_WALLPAPER_PRIMARY_FONT RCDATA "@FONT_PATH@"
