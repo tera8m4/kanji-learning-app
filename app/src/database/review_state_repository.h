@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <unordered_map>
 #include <vector>
 
 namespace kanji
@@ -21,6 +22,7 @@ namespace kanji::database
 		{}
 
 		std::vector<KanjiReviewState> GetReviewStates(const std::vector<std::uint32_t>& ids);
+		std::unordered_map<char32_t, int> GetAllReviewLevels();
 		void InitializeNewReviewStates(int count);
 		void CreateOrUpdateReviewState(const KanjiReviewState& state);
 

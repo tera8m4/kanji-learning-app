@@ -1,6 +1,8 @@
 #include "controller.h"
 #include "database/database_context.h"
 #include "scheduler/wanikani_scheduler.h"
+#include "system/platform_info.h"
+#include "wallpaper/wallpaper_service.h"
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -18,8 +20,9 @@ int main()
 {
 #endif
 	auto scheduler = std::make_unique<kanji::scheduler::WaniKaniScheduler>();
-	kanji::database::DatabaseContext context{"kanji.db"};
-	kanji::Controller controller{context, std::move(scheduler)};
+	kanji::database::DatabaseContext context{kanji::system::PlatformInfo::GetDatabaseLocation()};
+	kanji::wallpaper::WallpaperService wallpaper_service{context.GetReviewStateRepository()};
+	kanji::Controller controller{context, wallpaper_service, std::move(scheduler)};
 
 	try
 	{

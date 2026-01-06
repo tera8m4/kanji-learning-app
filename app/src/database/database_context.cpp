@@ -2,8 +2,8 @@
 
 namespace kanji::database
 {
-	DatabaseContext::DatabaseContext(std::string db_path)
-	    : connection{std::move(db_path)}
+	DatabaseContext::DatabaseContext(std::filesystem::path in_db_path)
+	    : connection{std::move(in_db_path)}
 	    , kanji_repo{connection}
 	    , review_repo{connection}
 	{

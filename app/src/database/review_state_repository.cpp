@@ -66,6 +66,53 @@ namespace kanji::database
 		return states;
 	}
 
+	std::unordered_map<char32_t, int> ReviewStateRepository::GetAllReviewLevels()
+	{
+		const char* select_sql = "SELECT k.kanji, krs.level "
+		                         "FROM kanjis k "
+		                         "INNER JOIN kanji_review_state krs ON k.id = krs.kanji_id;";
+
+		sqlite3_stmt* select_stmt;
+
+		int rc = sqlite3_prepare_v2(connection, select_sql, -1, &select_stmt, nullptr);
+		if (rc != SQLITE_OK)
+		{
+			spdlog::error("Failed to prepare statement: {0}", sqlite3_errmsg(connection));
+			return {};
+		}
+
+		std::unordered_map<char32_t, int> result;
+
+		while ((rc = sqlite3_step(select_stmt)) == SQLITE_ROW)
+		{
+			const unsigned char* kanji = sqlite3_column_text(select_stmt, 0);
+			const int level = sqlite3_column_int(select_stmt, 1);
+			// Decode UTF-8 to char32_t (most kanji are 3-byte UTF-8)
+			char32_t kanji_char;
+			if ((kanji[0] & 0xF0) == 0xE0) // 3-byte
+			{
+				kanji_char = ((kanji[0] & 0x0F) << 12) |
+				             ((kanji[1] & 0x3F) << 6) |
+				             (kanji[2] & 0x3F);
+			}
+			else if ((kanji[0] & 0xF8) == 0xF0) // 4-byte (rare)
+			{
+				kanji_char = ((kanji[0] & 0x07) << 18) |
+				             ((kanji[1] & 0x3F) << 12) |
+				             ((kanji[2] & 0x3F) << 6) |
+				             (kanji[3] & 0x3F);
+			}
+			else
+			{
+				kanji_char = kanji[0]; // fallback
+			}
+
+			result.emplace(kanji_char, level);
+		}
+
+		return result;
+	}
+
 	void ReviewStateRepository::InitializeNewReviewStates(int count)
 	{
 		// Get next K kanjis that don't have review states

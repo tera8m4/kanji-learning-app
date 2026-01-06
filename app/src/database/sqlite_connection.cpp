@@ -5,10 +5,16 @@
 
 namespace kanji::database
 {
-	SQLiteConnection::SQLiteConnection(std::string in_db_path)
+	SQLiteConnection::SQLiteConnection(std::filesystem::path in_db_path)
 	    : db_path{std::move(in_db_path)}
 	{
-		int rc = sqlite3_open(db_path.c_str(), &db);
+
+		if (!std::filesystem::exists(db_path))
+		{
+			std::filesystem::create_directories(db_path.parent_path());
+		}
+
+		int rc = sqlite3_open(reinterpret_cast<const char*>(db_path.u8string().c_str()), &db);
 		if (rc != SQLITE_OK)
 		{
 			spdlog::error("Cannot open database: {0}", sqlite3_errmsg(db));

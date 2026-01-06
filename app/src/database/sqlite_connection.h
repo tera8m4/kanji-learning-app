@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include <filesystem>
 
 struct sqlite3;
 
@@ -9,7 +9,7 @@ namespace kanji::database
 	class SQLiteConnection
 	{
 	public:
-		explicit SQLiteConnection(std::string in_db_path);
+		explicit SQLiteConnection(std::filesystem::path in_db_path);
 		SQLiteConnection(const SQLiteConnection&) = delete;
 		SQLiteConnection& operator=(const SQLiteConnection&) = delete;
 		~SQLiteConnection();
@@ -20,7 +20,7 @@ namespace kanji::database
 
 	private:
 		sqlite3* db;
-		std::string db_path;
+		std::filesystem::path db_path;
 	};
 
 } // namespace kanji::database
