@@ -7,10 +7,6 @@ set(CMAKE_CXX_STANDARD 23)
 
 if(MSVC)
     add_compile_options(/utf-8)
-    
-    set(FONT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/assets/komorebi-gothic.ttf")
-    set(INDEX_HTML_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../ui/dist/index.html")
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/resources.rc.in" "${CMAKE_CURRENT_BINARY_DIR}/resources.rc" @ONLY)
 endif()
 
 
@@ -24,9 +20,19 @@ target_include_directories("${PROJECT_NAME}Lib" PUBLIC ${CMAKE_CURRENT_SOURCE_DI
 
 # add dependencies
 include(cmake/CPM.cmake)
+CPMAddPackage(
+    NAME asio
+    GITHUB_REPOSITORY chriskohlhoff/asio
+    GIT_TAG "asio-1-36-0")
 
+CPMAddPackage(
+    NAME Crow
+    GITHUB_REPOSITORY CrowCpp/Crow
+    VERSION 1.3.1
+    EXCLUDE_FROM_ALL YES
+    OPTIONS "CROW_USE_BOOST OFF" "CROW_INSTALL OFF"
+)
 CPMAddPackage("gh:gabime/spdlog@1.16.0")
-CPMAddPackage("gh:webview/webview#0.12.0")
 CPMAddPackage("gh:nlohmann/json@3.12.0")
 CPMAddPackage(
     NAME sqlite3
@@ -38,11 +44,19 @@ add_library(sqlite3 STATIC ${sqlite3_SOURCE_DIR}/sqlite3.c)
 target_include_directories(sqlite3 PUBLIC ${sqlite3_SOURCE_DIR})
 
 # link dependencies to library
-target_link_libraries("${PROJECT_NAME}Lib" PUBLIC webview::core sqlite3 nlohmann_json::nlohmann_json spdlog) 
+target_link_libraries("${PROJECT_NAME}Lib" PUBLIC sqlite3 nlohmann_json::nlohmann_json spdlog)
+
+# set up Asio for Crow (standalone, no Boost)
+if(asio_ADDED)
+    add_library(asio INTERFACE)
+    target_include_directories(asio INTERFACE ${asio_SOURCE_DIR}/asio/include)
+    target_compile_definitions(asio INTERFACE ASIO_STANDALONE)
+    add_library(asio::asio ALIAS asio)
+endif()
 
 # add executable
-add_executable(${PROJECT_NAME} WIN32 src/main.cpp ${CMAKE_CURRENT_BINARY_DIR}/resources.rc)
-target_link_libraries(${PROJECT_NAME} PRIVATE "${PROJECT_NAME}Lib")
+add_executable(${PROJECT_NAME} src/main.cpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE "${PROJECT_NAME}Lib" Crow::Crow asio)
 
 
 add_subdirectory(test)
