@@ -51,16 +51,3 @@ Place `config.json` next to the executable:
 
 The app will not start without this file.
 
-## Deployment
-
-Push to `master` triggers the GitHub Actions workflow which:
-
-1. Builds on Ubuntu 24.04
-2. SSHes into the VPS
-3. Stops the `kanjireview` systemd service
-4. Copies the new binary and assets to `/opt/kanjireview/`
-5. Starts the service again
-
-nginx proxies `https://kanji.re-l.tatar` → `http://127.0.0.1:8080`.
-
-**Required GitHub secrets:** `VPS_SSH_KEY`, `VPS_HOST`, `VPS_USER`.
