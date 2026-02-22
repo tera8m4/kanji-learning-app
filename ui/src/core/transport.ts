@@ -22,7 +22,7 @@ export type KanjiData = {
 export type ResponseKanjis = KanjiData[];
 
 export class Transport {
-  private baseUrl = "http://localhost:8080";
+  private baseUrl = "";
 
   public async sendAnswers(req: RequestAnswers): Promise<void> {
     await fetch(`${this.baseUrl}/api/answers`, {
