@@ -36,9 +36,6 @@ namespace kanji
 			const auto& new_state = scheduler->GetNextState(old_state, in_answers[i].incorrect_streak);
 			review_repo.CreateOrUpdateReviewState(new_state);
 		}
-
-		using PlatformInfo = kanji::system::PlatformInfo;
-		PlatformInfo::SetWallpaper(PlatformInfo::GetWallpaperLocation());
 	}
 
 	void Controller::LearnMoreKanjis()
