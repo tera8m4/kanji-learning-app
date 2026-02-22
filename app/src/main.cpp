@@ -1,15 +1,17 @@
+#include "config.h"
 #include "controller.h"
 #include "database/database_context.h"
-#include "resources.h"
+#include "notification/review_notifier.h"
+#include "notification/telegram_notification_service.h"
 #include "scheduler/wanikani_scheduler.h"
 #include "system/platform_info.h"
 #include "system/resource.h"
-#include "wallpaper/wallpaper_service.h"
 #include <crow.h>
 #include <crow/middlewares/cors.h>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
 #include <string>
@@ -18,8 +20,25 @@ int main()
 {
 	auto scheduler = std::make_unique<kanji::scheduler::WaniKaniScheduler>();
 	kanji::database::DatabaseContext context{kanji::system::PlatformInfo::GetDatabaseLocation()};
-	// kanji::wallpaper::WallpaperService wallpaper_service{context.GetReviewStateRepository()};
 	kanji::Controller controller{context, std::move(scheduler)};
+	std::unique_ptr<kanji::notification::ReviewNotifier> notifier;
+	kanji::config::KanjiAppConfig config;
+
+	const std::filesystem::path config_path{"config.json"};
+	if (std::filesystem::exists(config_path))
+	{
+		using TelgramService = kanji::notification::TelegramNotificationService;
+		config = kanji::config::KanjiAppConfig::LoadFromFile(config_path);
+		auto telegram_service = std::make_unique<TelgramService>(config.notification.telegram);
+		const auto interval = std::chrono::minutes{config.notification.refresh_interval};
+		notifier = std::make_unique<kanji::notification::ReviewNotifier>(context, std::move(telegram_service), interval);
+		notifier->Start();
+	}
+	else
+	{
+		spdlog::warn("No config.json found — notifications disabled");
+		return 1;
+	}
 
 	crow::App<crow::CORSHandler> app;
 
@@ -54,11 +73,6 @@ int main()
 
 	CROW_ROUTE(app, "/")([](const crow::request&, crow::response& res) {
 		res.set_static_file_info("assets/index.html");
-		res.end();
-	});
-
-	CROW_ROUTE(app, "/<path>")([](const crow::request&, crow::response& res, const std::string& path) {
-		res.set_static_file_info("assets/" + path);
 		res.end();
 	});
 

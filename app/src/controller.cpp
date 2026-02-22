@@ -3,7 +3,6 @@
 #include "kanji.h"
 #include "scheduler/scheduler.h"
 #include "system/platform_info.h"
-#include "wallpaper/wallpaper_service.h"
 
 namespace kanji
 {

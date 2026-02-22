@@ -1,4 +1,0 @@
-#pragma once
-
-#define IDR_WALLPAPER_PRIMARY_FONT 101
-#define IDR_INDEX_HTML 102
