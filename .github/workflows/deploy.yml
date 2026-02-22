@@ -1,0 +1,32 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ libcurl4-openssl-dev nodejs npm
+
+      - name: Build
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --parallel
+
+      - name: Deploy to VPS
+        env:
+          SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: |
+          echo "$SSH_KEY" > /tmp/key && chmod 600 /tmp/key
+          scp -i /tmp/key build/app/KanjiReview $VPS_USER@$VPS_HOST:/opt/kanjireview/KanjiReview
+          scp -i /tmp/key -r build/app/assets $VPS_USER@$VPS_HOST:/opt/kanjireview/
+          ssh -i /tmp/key $VPS_USER@$VPS_HOST "sudo systemctl restart kanjireview"
