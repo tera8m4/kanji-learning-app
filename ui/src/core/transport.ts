@@ -33,6 +33,14 @@ export type KanjiData = {
 
 export type ResponseKanjis = KanjiData[];
 
+export type KanjiListEntry = {
+  id: number;
+  kanji: string;
+  meaning: string;
+  level: number;
+  next_review_date: number;
+};
+
 export class Transport {
   private baseUrl = "";
 
@@ -60,8 +68,8 @@ export class Transport {
     });
   }
 
-  public async getKanjis(): Promise<ResponseKanjis> {
-    const res = await fetch(`${this.baseUrl}/api/kanjis`, {
+  public async getReviews(): Promise<ResponseKanjis> {
+    const res = await fetch(`${this.baseUrl}/api/reviews`, {
       headers: this.getAuthHeaders(),
     });
     return res.json();
@@ -72,5 +80,12 @@ export class Transport {
       method: "POST",
       headers: this.getAuthHeaders(),
     });
+  }
+
+  public async getKanjiList(): Promise<KanjiListEntry[]> {
+    const res = await fetch(`${this.baseUrl}/api/kanjis`, {
+      headers: this.getAuthHeaders(),
+    });
+    return res.json();
   }
 }

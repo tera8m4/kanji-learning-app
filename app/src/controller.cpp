@@ -50,4 +50,9 @@ namespace kanji
 	{
 		db.GetKanjiRepository().BatchInsertKanjis(kanjis);
 	}
+
+	std::vector<KanjiRecord> Controller::GetKanjis()
+	{
+		return db.GetKanjiRepository().GetKanjis();
+	}
 } // namespace kanji

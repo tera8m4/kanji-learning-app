@@ -65,7 +65,7 @@ export function useKanjiReview(transport: Transport) {
 
   const loadMoreKanjis = () => {
     setIsLoading(true);
-    transport.getKanjis().then(response => {
+    transport.getReviews().then(response => {
       if (response.length === 0) {
         setIsLoading(false);
         return;
@@ -75,7 +75,7 @@ export function useKanjiReview(transport: Transport) {
   };
 
   useEffect(() => {
-    transport.getKanjis().then(loadKanjis);
+    transport.getReviews().then(loadKanjis);
   }, []);
 
   const removeCurrentFromDeck = () => {
@@ -191,7 +191,7 @@ export function useKanjiReview(transport: Transport) {
   const handleLearnMore = async () => {
     setIsLoading(true);
     await transport.learnMoreKanjis();
-    const response = await transport.getKanjis();
+    const response = await transport.getReviews();
     await loadKanjis(response);
   };
 

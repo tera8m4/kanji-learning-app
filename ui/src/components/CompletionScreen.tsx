@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import type { KanjiState } from "./types";
 
 type CompletionScreenProps = {
@@ -6,6 +7,7 @@ type CompletionScreenProps = {
 };
 
 export default function CompletionScreen({ kanjis, onLearnMore }: CompletionScreenProps) {
+  const navigate = useNavigate();
   const correctCount = kanjis.filter(k => k.incorrectStreak === 0).length;
   const totalCount = kanjis.length;
 
@@ -31,6 +33,9 @@ export default function CompletionScreen({ kanjis, onLearnMore }: CompletionScre
           Learn More Kanjis Today
         </button>
       )}
+      <button onClick={() => navigate("/list")} className="learn-more-button" style={{ background: 'transparent', color: '#8b7355', border: '2px solid #d4c4b0', boxShadow: 'none' }}>
+        View Kanji
+      </button>
     </div>
   );
 }

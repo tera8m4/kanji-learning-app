@@ -43,16 +43,7 @@ namespace kanji
 	{
 		CROW_ROUTE(app, "/api/login").methods("POST"_method)([&](const crow::request& req) {
 			auto j = nlohmann::json::parse(req.body);
-			auth::TelegramAuthData data{
-			    .id = j["id"].get<int>(),
-			    .first_name = j["first_name"],
-			    .last_name = j.value("last_name", ""),
-			    .username = j["username"],
-			    .photo_url = j.value("photo_url", ""),
-			    .auth_date = j["auth_date"].get<int64_t>(),
-			    .hash = j["hash"],
-			};
-
+			auth::TelegramAuthData data = j.get<auth::TelegramAuthData>();
 			spdlog::debug("Login request body: {}", req.body);
 			spdlog::info("Login attempt: id={}, username={}", data.id, data.username);
 
@@ -69,7 +60,7 @@ namespace kanji
 			return res;
 		});
 
-		CROW_ROUTE(app, "/api/kanjis").methods("GET"_method)([&]() {
+		CROW_ROUTE(app, "/api/reviews").methods("GET"_method)([&]() {
 			std::lock_guard lock(controller_mutex);
 			nlohmann::json j = controller.GetReviewKanjis();
 			auto res = crow::response(j.dump());
@@ -88,6 +79,14 @@ namespace kanji
 			std::lock_guard lock(controller_mutex);
 			controller.LearnMoreKanjis();
 			return crow::response(200);
+		});
+
+		CROW_ROUTE(app, "/api/kanjis").methods("GET"_method)([&]() {
+			std::lock_guard lock(controller_mutex);
+			nlohmann::json j = controller.GetKanjis();
+			auto res = crow::response(j.dump());
+			res.set_header("Content-Type", "application/json");
+			return res;
 		});
 
 		CROW_ROUTE(app, "/api/kanjis").methods("POST"_method)([&](const crow::request& req) {

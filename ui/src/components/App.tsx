@@ -1,10 +1,8 @@
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
-import LoadingScreen from "./LoadingScreen";
-import CompletionScreen from "./CompletionScreen";
-import Header from "./Header";
-import FlashCard from "./FlashCard";
 import LoginScreen from "./LoginScreen";
-import { useKanjiReview } from "../hooks/useKanjiReview";
+import KanjiListScreen from "./KanjiListScreen";
+import ReviewScreen from "./ReviewScreen";
 import { useAuth } from "../hooks/useAuth";
 import type { Transport } from "../core/transport";
 
@@ -15,56 +13,17 @@ interface AppProps {
 export default function App({ transport }: AppProps) {
   const { isAuthenticated, handleTelegramLogin } = useAuth(transport);
 
-  const {
-    kanjis,
-    reviewDeck,
-    currentReview,
-    currentKanji,
-    userInput,
-    setUserInput,
-    feedback,
-    shake,
-    isLoading,
-    handleSubmit,
-    handleLearnMore,
-    canRollback,
-    handleRollback,
-    handleContinue,
-  } = useKanjiReview(transport);
-
-
   if (!isAuthenticated) {
     return <LoginScreen onLogin={handleTelegramLogin} />;
   }
 
-  if (isLoading) {
-    return <LoadingScreen />;
-  }
-
-  if (!currentReview || !currentKanji) {
-    return <CompletionScreen kanjis={kanjis} onLearnMore={handleLearnMore} />;
-  }
-
   return (
-    <div className="container">
-      <div className="ink-splatter-1"></div>
-      <div className="ink-splatter-2"></div>
-
-      <Header />
-
-      <FlashCard
-        currentReview={currentReview}
-        currentKanji={currentKanji}
-        totalItems={reviewDeck.length}
-        userInput={userInput}
-        feedback={feedback}
-        shake={shake}
-        canRollback={canRollback}
-        onInputChange={setUserInput}
-        onSubmit={handleSubmit}
-        onRollback={handleRollback}
-        onContinue={handleContinue}
-      />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<ReviewScreen transport={transport} />} />
+        <Route path="/list" element={<KanjiListScreen transport={transport} />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }

@@ -28,6 +28,7 @@ namespace kanji
 		void SetAnswers(const std::vector<KanjiAnswer>& in_answers);
 		void LearnMoreKanjis();
 		void BatchAddKanjis(const std::vector<KanjiData>& kanjis);
+		std::vector<KanjiRecord> GetKanjis();
 
 	private:
 		database::DatabaseContext& db;

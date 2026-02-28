@@ -35,8 +35,18 @@ namespace kanji
 		int incorrect_streak;
 	};
 
+	struct KanjiRecord
+	{
+		std::uint32_t id;
+		std::string kanji;
+		std::string meaning;
+		int level;
+		std::int64_t next_review_date;
+	};
+
 	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(KanjiWord, word, reading)
 	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(KanjiData, id, kanji, examples, meaning)
 	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(KanjiAnswer, kanji_id, incorrect_streak)
+	NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(KanjiRecord, id, kanji, meaning, level, next_review_date)
 
 }; // namespace kanji

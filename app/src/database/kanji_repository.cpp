@@ -49,7 +49,9 @@ namespace kanji::database
 	void KanjiRepository::BatchInsertKanjis(const std::vector<KanjiData>& kanjis)
 	{
 		if (kanjis.empty())
+		{
 			return;
+		}
 
 		char* err_msg = nullptr;
 		sqlite3_exec(connection, "BEGIN TRANSACTION;", nullptr, nullptr, &err_msg);
@@ -131,6 +133,38 @@ namespace kanji::database
 			spdlog::error("Failed to commit transaction: {0}", err_msg);
 			sqlite3_free(err_msg);
 		}
+	}
+
+	std::vector<KanjiRecord> KanjiRepository::GetKanjis() const
+	{
+		std::vector<KanjiRecord> result;
+		const char* sql =
+		    "SELECT k.id, k.kanji, k.meaning, rs.level, rs.next_review_date "
+		    "FROM kanjis k "
+		    "INNER JOIN kanji_review_state rs ON k.id = rs.kanji_id "
+		    "ORDER BY rs.next_review_date;";
+		sqlite3_stmt* stmt;
+
+		int rc = sqlite3_prepare_v2(connection, sql, -1, &stmt, nullptr);
+		if (rc != SQLITE_OK)
+		{
+			spdlog::error("Failed to prepare statement: {0}", sqlite3_errmsg(connection));
+			return result;
+		}
+
+		while ((rc = sqlite3_step(stmt)) == SQLITE_ROW)
+		{
+			KanjiRecord entry;
+			entry.id = sqlite3_column_int(stmt, 0);
+			entry.kanji = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+			entry.meaning = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+			entry.level = sqlite3_column_int(stmt, 3);
+			entry.next_review_date = sqlite3_column_int64(stmt, 4);
+			result.push_back(entry);
+		}
+
+		sqlite3_finalize(stmt);
+		return result;
 	}
 
 	std::vector<KanjiWord> KanjiRepository::GetKanjiWords(const std::uint32_t kanji_id) const

@@ -1,0 +1,142 @@
+.back-button {
+  margin-bottom: 20px;
+  padding: 8px 20px;
+  font-size: 0.85rem;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-weight: 500;
+  color: #8b7355;
+  background: transparent;
+  border: 2px solid #d4c4b0;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.1em;
+}
+
+.back-button:hover {
+  background: rgba(212, 196, 176, 0.1);
+  border-color: #8b7355;
+  color: #5a4a3a;
+  transform: translateY(-1px);
+}
+
+.kanji-grid {
+  width: 100%;
+  max-width: 560px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 10px;
+}
+
+.kanji-grid-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 8px 10px;
+  background: #fffef9;
+  border: 1px solid rgba(139, 69, 19, 0.1);
+  border-radius: 6px;
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.03),
+    0 2px 4px rgba(0, 0, 0, 0.03);
+  animation: fadeIn 0.3s ease;
+}
+
+.kanji-grid-char {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #2d2d2d;
+  line-height: 1;
+}
+
+.kanji-grid-meaning {
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-size: 0.7rem;
+  color: #8b7355;
+  font-weight: 500;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.kanji-grid-level {
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  padding: 2px 7px;
+  border-radius: 3px;
+}
+
+.level-apprentice {
+  background: rgba(221, 75, 126, 0.1);
+  color: #dd4b7e;
+}
+
+.level-guru {
+  background: rgba(136, 45, 206, 0.1);
+  color: #882dce;
+}
+
+.level-master {
+  background: rgba(41, 77, 219, 0.1);
+  color: #294ddb;
+}
+
+.level-enlightened {
+  background: rgba(0, 147, 221, 0.1);
+  color: #0093dd;
+}
+
+.level-burned {
+  background: rgba(67, 67, 67, 0.1);
+  color: #434343;
+}
+
+.kanji-grid-empty {
+  text-align: center;
+  color: #aaa;
+  font-size: 0.9rem;
+  padding: 40px 0;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 20px 0 40px;
+}
+
+.pagination-button {
+  padding: 8px 18px;
+  font-size: 0.85rem;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-weight: 500;
+  color: #8b7355;
+  background: transparent;
+  border: 1px solid #d4c4b0;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.1em;
+}
+
+.pagination-button:hover:not(:disabled) {
+  background: rgba(212, 196, 176, 0.1);
+  border-color: #8b7355;
+  color: #5a4a3a;
+}
+
+.pagination-button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.pagination-info {
+  font-size: 0.85rem;
+  color: #8b7355;
+  letter-spacing: 0.05em;
+}

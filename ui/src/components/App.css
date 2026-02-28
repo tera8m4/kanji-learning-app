@@ -112,6 +112,27 @@
   text-transform: uppercase;
 }
 
+.header-nav-button {
+  margin-top: 10px;
+  padding: 6px 16px;
+  font-size: 0.8rem;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-weight: 500;
+  color: #8b7355;
+  background: transparent;
+  border: 1px solid #d4c4b0;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.1em;
+}
+
+.header-nav-button:hover {
+  background: rgba(212, 196, 176, 0.1);
+  border-color: #8b7355;
+  color: #5a4a3a;
+}
+
 /* Score */
 .score-container {
   position: fixed;
