@@ -1,15 +1,15 @@
 #include "config.h"
 #include <filesystem>
 #include <format>
+#include <iostream>
 #include <jwt-cpp/traits/nlohmann-json/defaults.h>
-#include <print>
 
 int main()
 {
 	const std::filesystem::path config_path{"config.json"};
 	if (!std::filesystem::exists(config_path))
 	{
-		std::print("config.json not found");
+		std::cout << "config.json not found" << std::endl;
 		return 1;
 	}
 
@@ -25,6 +25,6 @@ int main()
 	                 .set_expires_at(exp)
 	                 .sign(jwt::algorithm::hs256{config.auth.jwt_secret});
 
-	std::print("{}\n", token);
+	std::cout << token << std::endl;
 	return 0;
 }

@@ -90,8 +90,10 @@ endif()
 add_executable(${PROJECT_NAME} src/main.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE "${PROJECT_NAME}Lib" Crow::Crow asio)
 
-add_executable(GenerateToken src/generate_token.cpp)
-target_link_libraries(GenerateToken PRIVATE "${PROJECT_NAME}Lib")
+if(NOT CMAKE_BUILD_TYPE STREQUAL "Release")
+    add_executable(GenerateToken src/generate_token.cpp)
+    target_link_libraries(GenerateToken PRIVATE "${PROJECT_NAME}Lib")
+endif()
 
 
 option(BUILD_TESTS "Build tests" ON)
