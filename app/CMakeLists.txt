@@ -11,6 +11,7 @@ endif()
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 file(GLOB_RECURSE HEADERS "src/*.h")
 list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
+list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/generate_token.cpp")
 
 add_library("${PROJECT_NAME}Lib" STATIC ${SOURCES} ${HEADERS})
 target_include_directories("${PROJECT_NAME}Lib" PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -88,6 +89,9 @@ endif()
 
 add_executable(${PROJECT_NAME} src/main.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE "${PROJECT_NAME}Lib" Crow::Crow asio)
+
+add_executable(GenerateToken src/generate_token.cpp)
+target_link_libraries(GenerateToken PRIVATE "${PROJECT_NAME}Lib")
 
 
 option(BUILD_TESTS "Build tests" ON)
