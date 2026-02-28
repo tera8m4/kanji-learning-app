@@ -15,6 +15,7 @@ namespace kanji::database
 		KanjiRepository& operator=(const KanjiRepository&) = delete;
 
 		std::vector<KanjiData> GetKanjiForReview() const;
+		void BatchInsertKanjis(const std::vector<KanjiData>& kanjis);
 
 	private:
 		const SQLiteConnection& connection;

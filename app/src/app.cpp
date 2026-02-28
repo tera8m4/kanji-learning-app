@@ -90,6 +90,14 @@ namespace kanji
 			return crow::response(200);
 		});
 
+		CROW_ROUTE(app, "/api/kanjis").methods("POST"_method)([&](const crow::request& req) {
+			std::lock_guard lock(controller_mutex);
+			auto j = nlohmann::json::parse(req.body);
+			std::vector<KanjiData> kanjis = j["kanjis"];
+			controller.BatchAddKanjis(kanjis);
+			return crow::response(200);
+		});
+
 		CROW_ROUTE(app, "/")([](const crow::request&, crow::response& res) {
 			res.set_static_file_info("assets/index.html");
 			res.end();

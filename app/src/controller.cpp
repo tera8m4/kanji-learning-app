@@ -45,4 +45,9 @@ namespace kanji
 		auto& review_repo = db.GetReviewStateRepository();
 		review_repo.InitializeNewReviewStates(MAX_REVIEWS_REQUEST);
 	}
+
+	void Controller::BatchAddKanjis(const std::vector<KanjiData>& kanjis)
+	{
+		db.GetKanjiRepository().BatchInsertKanjis(kanjis);
+	}
 } // namespace kanji
