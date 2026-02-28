@@ -46,6 +46,93 @@ namespace kanji::database
 		return kanjis;
 	}
 
+	void KanjiRepository::BatchInsertKanjis(const std::vector<KanjiData>& kanjis)
+	{
+		if (kanjis.empty())
+			return;
+
+		char* err_msg = nullptr;
+		sqlite3_exec(connection, "BEGIN TRANSACTION;", nullptr, nullptr, &err_msg);
+		if (err_msg)
+		{
+			spdlog::error("Failed to begin transaction: {0}", err_msg);
+			sqlite3_free(err_msg);
+			return;
+		}
+
+		const char* kanji_sql = "INSERT INTO kanjis (kanji, meaning) VALUES (?, ?);";
+		const char* word_sql = "INSERT INTO kanji_words (kanji_id, word, reading) VALUES (?, ?, ?);";
+		const char* review_sql =
+		    "INSERT OR IGNORE INTO kanji_review_state (kanji_id, level, next_review_date, created_at) "
+		    "VALUES (?, 0, ?, ?);";
+
+		sqlite3_stmt* kanji_stmt;
+		sqlite3_stmt* word_stmt;
+		sqlite3_stmt* review_stmt;
+
+		if (sqlite3_prepare_v2(connection, kanji_sql, -1, &kanji_stmt, nullptr) != SQLITE_OK ||
+		    sqlite3_prepare_v2(connection, word_sql, -1, &word_stmt, nullptr) != SQLITE_OK ||
+		    sqlite3_prepare_v2(connection, review_sql, -1, &review_stmt, nullptr) != SQLITE_OK)
+		{
+			spdlog::error("Failed to prepare batch insert statements: {0}", sqlite3_errmsg(connection));
+			sqlite3_exec(connection, "ROLLBACK;", nullptr, nullptr, nullptr);
+			return;
+		}
+
+		std::int64_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+		for (const auto& kanji : kanjis)
+		{
+			sqlite3_bind_text(kanji_stmt, 1, kanji.kanji.c_str(), -1, SQLITE_TRANSIENT);
+			sqlite3_bind_text(kanji_stmt, 2, kanji.meaning.c_str(), -1, SQLITE_TRANSIENT);
+
+			if (sqlite3_step(kanji_stmt) != SQLITE_DONE)
+			{
+				spdlog::error("Failed to insert kanji '{0}': {1}", kanji.kanji, sqlite3_errmsg(connection));
+				sqlite3_reset(kanji_stmt);
+				continue;
+			}
+
+			std::int64_t kanji_id = sqlite3_last_insert_rowid(connection);
+			sqlite3_reset(kanji_stmt);
+
+			for (const auto& word : kanji.examples)
+			{
+				sqlite3_bind_int64(word_stmt, 1, kanji_id);
+				sqlite3_bind_text(word_stmt, 2, word.word.c_str(), -1, SQLITE_TRANSIENT);
+				sqlite3_bind_text(word_stmt, 3, word.reading.c_str(), -1, SQLITE_TRANSIENT);
+
+				if (sqlite3_step(word_stmt) != SQLITE_DONE)
+				{
+					spdlog::error("Failed to insert word '{0}': {1}", word.word, sqlite3_errmsg(connection));
+				}
+				sqlite3_reset(word_stmt);
+			}
+
+			sqlite3_bind_int64(review_stmt, 1, kanji_id);
+			sqlite3_bind_int64(review_stmt, 2, now);
+			sqlite3_bind_int64(review_stmt, 3, now);
+
+			if (sqlite3_step(review_stmt) != SQLITE_DONE)
+			{
+				spdlog::error("Failed to insert review state for kanji '{0}': {1}", kanji.kanji,
+				              sqlite3_errmsg(connection));
+			}
+			sqlite3_reset(review_stmt);
+		}
+
+		sqlite3_finalize(kanji_stmt);
+		sqlite3_finalize(word_stmt);
+		sqlite3_finalize(review_stmt);
+
+		sqlite3_exec(connection, "COMMIT;", nullptr, nullptr, &err_msg);
+		if (err_msg)
+		{
+			spdlog::error("Failed to commit transaction: {0}", err_msg);
+			sqlite3_free(err_msg);
+		}
+	}
+
 	std::vector<KanjiWord> KanjiRepository::GetKanjiWords(const std::uint32_t kanji_id) const
 	{
 		std::vector<KanjiWord> words;
