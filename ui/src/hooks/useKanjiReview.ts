@@ -83,7 +83,12 @@ export function useKanjiReview(transport: Transport) {
 
   const removeCurrentFromDeck = () => {
     setReviewDeck(prev => {
+      const current = prev[0];
       const newDeck = prev.slice(1);
+
+      if (current && !newDeck.some(item => item.kanjiIndex === current.kanjiIndex)) {
+        setTotalPending(p => Math.max(0, p - 1));
+      }
 
       if (newDeck.length === 0) {
         const answers: KanjiAnswer[] = kanjis.map(kanji => ({
