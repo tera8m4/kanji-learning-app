@@ -45,6 +45,14 @@ Place `config.json` next to the executable:
       "bot_token": "YOUR_BOT_TOKEN",
       "chat_id": 123456789
     }
+  },
+  "auth": {
+      "jwt_secret": "change-me-to-a-long-random-secret",
+      "token_expiry_hours": 24,
+      "password_account": {
+          "username": "leave-empty-to-disabled",
+          "password_hash": ""
+      }
   }
 }
 ```

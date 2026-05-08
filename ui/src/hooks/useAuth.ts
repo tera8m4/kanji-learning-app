@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getToken, clearToken } from "../core/auth";
-import type { Transport, TelegramAuthPayload } from "../core/transport";
+import type { Transport, TelegramAuthPayload, PasswordAuthPayload } from "../core/transport";
 
 export function useAuth(transport: Transport) {
   const [isAuthenticated, setIsAuthenticated] = useState(() => !!getToken());
@@ -20,5 +20,10 @@ export function useAuth(transport: Transport) {
     setIsAuthenticated(true);
   };
 
-  return { isAuthenticated, handleTelegramLogin, logout };
+  const handlePasswordLogin = async (creds: PasswordAuthPayload) => {
+    await transport.loginWithPassword(creds);
+    setIsAuthenticated(true);
+  };
+
+  return { isAuthenticated, handleTelegramLogin, handlePasswordLogin, logout };
 }

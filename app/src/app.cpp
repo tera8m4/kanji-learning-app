@@ -1,6 +1,9 @@
 #include "app.h"
 #include "auth/telegram_auth.h"
 #include "notification/telegram_notification_service.h"
+#include "utils/crypto.h"
+#include <algorithm>
+#include <cctype>
 #include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
 
@@ -41,6 +44,53 @@ namespace kanji
 
 	void KanjiApp::RegisterRoutes()
 	{
+		CROW_ROUTE(app, "/api/login/password").methods("POST"_method)([&](const crow::request& req) {
+			const auto& account = config.auth.password_account;
+
+			if (account.username.empty() || account.password_hash.empty())
+			{
+				spdlog::warn("Password login disabled: no account configured");
+				return crow::response(401);
+			}
+
+			nlohmann::json j;
+			try
+			{
+				j = nlohmann::json::parse(req.body);
+			}
+			catch (const std::exception&)
+			{
+				return crow::response(400);
+			}
+
+			const auto username = j.value("username", std::string{});
+			const auto password = j.value("password", std::string{});
+
+			auto to_lower = [](std::string s) {
+				std::transform(s.begin(), s.end(), s.begin(),
+				               [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+				return s;
+			};
+
+			const std::string computed = kanji::utils::crypto::SHA256(password).ToLowerCase();
+			const std::string expected = to_lower(account.password_hash);
+
+			bool username_ok = username == account.username;
+			bool hash_ok = computed == expected;
+
+			if (!username_ok || !hash_ok)
+			{
+				spdlog::warn("Password login rejected for username='{}' hash='{}'", username, computed);
+				return crow::response(401);
+			}
+
+			auto token = auth_service->GenerateToken(config.notification.telegram.chat_id);
+			nlohmann::json resp = {{"token", token}};
+			auto res = crow::response(resp.dump());
+			res.set_header("Content-Type", "application/json");
+			return res;
+		});
+
 		CROW_ROUTE(app, "/api/login").methods("POST"_method)([&](const crow::request& req) {
 			auto j = nlohmann::json::parse(req.body);
 			auth::TelegramAuthData data = j.get<auth::TelegramAuthData>();

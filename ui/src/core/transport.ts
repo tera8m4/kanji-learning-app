@@ -10,6 +10,11 @@ export type TelegramAuthPayload = {
   hash: string;
 };
 
+export type PasswordAuthPayload = {
+  username: string;
+  password: string;
+};
+
 export type KanjiAnswer = {
   kanji_id: number,
   incorrect_streak: number,
@@ -68,6 +73,20 @@ export class Transport {
       body: JSON.stringify(telegramData),
     });
     if (!res.ok) throw new Error("Login failed");
+    const { token } = await res.json();
+    setToken(token);
+  }
+
+  public async loginWithPassword(creds: PasswordAuthPayload): Promise<void> {
+    const res = await fetch(`${this.baseUrl}/api/login/password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(creds),
+    });
+    if (!res.ok) {
+      const message = res.status === 401 ? "Invalid username or password" : "Login failed";
+      throw new Error(message);
+    }
     const { token } = await res.json();
     setToken(token);
   }
