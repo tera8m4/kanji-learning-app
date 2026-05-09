@@ -151,6 +151,18 @@ namespace kanji
 			res.set_static_file_info("assets/index.html");
 			res.end();
 		});
+
+		CROW_ROUTE(app, "/fonts/<string>")([](const crow::request&, crow::response& res, std::string filename) {
+			if (filename.find("..") != std::string::npos || filename.find('/') != std::string::npos
+			    || filename.find('\\') != std::string::npos)
+			{
+				res.code = 400;
+				res.end();
+				return;
+			}
+			res.set_static_file_info("assets/fonts/" + filename);
+			res.end();
+		});
 	}
 
 } // namespace kanji

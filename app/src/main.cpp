@@ -12,6 +12,12 @@ int main()
 		return 1;
 	}
 
+	const std::filesystem::path fonts_dir{"assets/fonts"};
+	if (!std::filesystem::exists(fonts_dir) || std::filesystem::is_empty(fonts_dir))
+	{
+		spdlog::warn("No fonts found in {} — UI will fall back to system fonts", fonts_dir.string());
+	}
+
 	const auto config = kanji::config::KanjiAppConfig::LoadFromFile(config_path);
 	kanji::KanjiApp{config}.Run();
 

@@ -36,7 +36,7 @@ export function useKanjiReview(transport: Transport) {
 
   const preloadFontGlyphs = async (text: string) => {
     if (!document.fonts) return;
-    await document.fonts.load("700 6rem 'Noto Serif JP'", text);
+    await document.fonts.load("700 6rem 'Zen Kaku Gothic New'", text);
   };
 
   const loadKanjis = async (response: any[], total: number) => {
