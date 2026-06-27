@@ -13,7 +13,8 @@ namespace kanji::auth
 			return;
 		}
 
-		if (req.url == "/" || req.url.starts_with("/api/login") || req.url.starts_with("/fonts/"))
+		if (req.url == "/" || req.url.starts_with("/api/login") || req.url.starts_with("/api/auth-config")
+		    || req.url.starts_with("/fonts/"))
 		{
 			return;
 		}

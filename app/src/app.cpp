@@ -51,6 +51,13 @@ namespace kanji
 
 	void KanjiApp::RegisterRoutes()
 	{
+		CROW_ROUTE(app, "/api/auth-config")([&]() {
+			nlohmann::json resp = {{"auth_required", config.auth.enabled}};
+			auto res = crow::response(resp.dump());
+			res.set_header("Content-Type", "application/json");
+			return res;
+		});
+
 		CROW_ROUTE(app, "/api/login/password").methods("POST"_method)([&](const crow::request& req) {
 			const auto& account = config.auth.password_account;
 
