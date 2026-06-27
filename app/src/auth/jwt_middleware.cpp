@@ -8,6 +8,11 @@ namespace kanji::auth
 	{
 		static constexpr std::string_view bearer_prefix = "Bearer ";
 
+		if (!enabled)
+		{
+			return;
+		}
+
 		if (req.url == "/" || req.url.starts_with("/api/login") || req.url.starts_with("/fonts/"))
 		{
 			return;

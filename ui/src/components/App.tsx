@@ -11,7 +11,11 @@ interface AppProps {
 }
 
 export default function App({ transport }: AppProps) {
-  const { isAuthenticated, handleTelegramLogin, handlePasswordLogin } = useAuth(transport);
+  const { isLoading, isAuthenticated, handleTelegramLogin, handlePasswordLogin } = useAuth(transport);
+
+  if (isLoading) {
+    return null;
+  }
 
   if (!isAuthenticated) {
     return (

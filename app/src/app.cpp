@@ -39,7 +39,14 @@ namespace kanji
 		    .methods("GET"_method, "POST"_method)
 		    .headers("Content-Type", "Authorization");
 
-		app.get_middleware<auth::JwtMiddleware>().auth_service = auth_service;
+		auto& jwt = app.get_middleware<auth::JwtMiddleware>();
+		jwt.auth_service = auth_service;
+		jwt.enabled = config.auth.enabled;
+
+		if (!config.auth.enabled)
+		{
+			spdlog::warn("JWT authentication is DISABLED via config (auth.enabled=false)");
+		}
 	}
 
 	void KanjiApp::RegisterRoutes()

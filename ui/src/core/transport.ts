@@ -53,6 +53,12 @@ export class Transport {
   private baseUrl = "";
   public onSessionExpired: (() => void) | null = null;
 
+  public async getAuthConfig(): Promise<{ auth_required: boolean }> {
+    const res = await fetch(`${this.baseUrl}/api/auth-config`);
+    if (!res.ok) throw new Error("Failed to fetch auth config");
+    return res.json();
+  }
+
   private getAuthHeaders(): HeadersInit {
     const token = getToken();
     return token ? { Authorization: `Bearer ${token}` } : {};

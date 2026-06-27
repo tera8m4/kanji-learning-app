@@ -17,5 +17,6 @@ namespace kanji::auth
 		void after_handle(crow::request& req, crow::response& res, context&);
 
 		std::shared_ptr<AuthService> auth_service;
+		bool enabled{true};
 	};
 } // namespace kanji::auth
