@@ -223,17 +223,84 @@
   border: 1px solid rgba(139, 69, 19, 0.1);
 }
 
-.card-correct {
+.card-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/*
+ * Review-type tints. Meaning cards lean to the warm brown of the existing ink
+ * palette; reading cards lean to a cool indigo (藍), the traditional companion
+ * colour. Kept low-saturation so the correct/incorrect states above still read
+ * as the dominant signal.
+ */
+.card-meaning {
+  background: linear-gradient(to bottom, #fffef9 0%, #fdf8f0 100%);
+  border-color: rgba(139, 69, 19, 0.22);
+}
+
+.card-reading {
+  background: linear-gradient(to bottom, #fffef9 0%, #f4f6fa 100%);
+  border-color: rgba(63, 81, 133, 0.22);
+}
+
+/* A coloured spine makes the type readable at a glance, even peripherally. */
+.card-meaning::before,
+.card-reading::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  border-radius: 4px 0 0 4px;
+}
+
+.card-meaning::before {
+  background: linear-gradient(to bottom, rgba(139, 69, 19, 0.55), rgba(139, 69, 19, 0.2));
+}
+
+.card-reading::before {
+  background: linear-gradient(to bottom, rgba(63, 81, 133, 0.55), rgba(63, 81, 133, 0.2));
+}
+
+/* The answer state must win over the type tint, so it follows it here. */
+.card.card-correct {
   border-color: rgba(107, 142, 35, 0.3);
   background: linear-gradient(to bottom, #fffef9, #f8faf0);
 }
 
-.card-incorrect {
+.card.card-incorrect {
   border-color: rgba(199, 80, 80, 0.2);
 }
 
-.card-shake {
-  animation: shake 0.5s ease-in-out;
+/* Type label above the question. */
+.card-type-label {
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  /* Clear the absolutely-positioned corner kanji (top-right, ~2rem tall). */
+  padding: 0 44px;
+}
+
+.card-meaning .card-type-label {
+  color: rgba(139, 69, 19, 0.7);
+}
+
+.card-reading .card-type-label {
+  color: rgba(63, 81, 133, 0.7);
+}
+
+/* Tint the small corner kanji and the seal to match. */
+.card-reading .card-kanji-small {
+  color: rgba(63, 81, 133, 0.6);
+}
+
+.card-reading .seal {
+  color: #3f5185;
+  border-color: #3f5185;
 }
 
 .card-inner {

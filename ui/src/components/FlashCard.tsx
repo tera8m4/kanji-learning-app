@@ -64,7 +64,7 @@ export default function FlashCard({
 
   return (
     <div
-      className={`card ${feedback === "correct" ? "card-correct" : ""} ${feedback === "incorrect" ? "card-incorrect" : ""} ${shake ? "card-shake" : ""}`}
+      className={`card ${currentReview.type === "meaning" ? "card-meaning" : "card-reading"} ${feedback === "correct" ? "card-correct" : ""} ${feedback === "incorrect" ? "card-incorrect" : ""} ${shake ? "card-shake" : ""}`}
     >
       <div className="card-inner">
         <div className="card-number">
@@ -72,6 +72,10 @@ export default function FlashCard({
         </div>
 
         <div className="card-kanji-small">{currentKanji.kanji}</div>
+
+        <div className="card-type-label">
+          {currentReview.type === "meaning" ? "意味 · Meaning" : "読み · Reading"}
+        </div>
 
         <div className="kanji-container">
           <span className="kanji">{currentReview.question}</span>
