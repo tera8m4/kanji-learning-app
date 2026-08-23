@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import * as wanakana from "wanakana";
 import type { KanjiAnswer, Transport } from "../core/transport";
 import type { KanjiState, ReviewItem } from "../components/types";
+import { playCorrectSound, playIncorrectSound } from "../core/sound";
 
 export function useKanjiReview(transport: Transport) {
   const [kanjis, setKanjis] = useState<KanjiState[]>([]);
@@ -169,12 +170,14 @@ export function useKanjiReview(transport: Transport) {
 
     if (isCorrect) {
       setFeedback("correct");
+      playCorrectSound();
       setCanRollback(false);
       setTimeout(() => {
         removeCurrentFromDeck();
       }, 500);
     } else {
       setFeedback("incorrect");
+      playIncorrectSound();
       setShake(true);
       setCanRollback(true);
 
